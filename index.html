@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PULSE · Health Risk Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="noise-overlay"></div>
+
+  <!-- TOP NAV -->
+  <nav class="topnav">
+    <div class="topnav-left">
+      <div class="nav-brand">
+        <div class="nav-logo-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M2 10h4l2.5-6 3 12 2.5-9 2 3H18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <span class="nav-logo-name">PULSE<span class="nav-version">v2</span></span>
+      </div>
+      <div class="nav-divider"></div>
+      <div class="nav-pill">Health Risk Intelligence</div>
+    </div>
+  </nav>
+
+  <!-- APP LAYOUT -->
+  <div class="app-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <div class="sidebar-logo-icon">
+            <svg width="22" height="22" viewBox="0 0 20 20" fill="none">
+              <path d="M2 10h4l2.5-6 3 12 2.5-9 2 3H18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <div class="logo-title">PULSE</div>
+            <div class="logo-sub">Readmission Intelligence</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="section-label">Patient &amp; Admission</div>
+        <div class="field-stack">
+          <div class="field">
+            <label for="pid">Patient ID</label>
+            <input type="text" id="pid" value="8222157" autocomplete="off" />
+          </div>
+          <div class="field">
+            <label for="icu-id">ICU Admission ID</label>
+            <input type="text" id="icu-id" value="1001" autocomplete="off" />
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="los">Length of Stay</label>
+              <input type="number" id="los" value="14" min="0" />
+            </div>
+            <div class="field">
+              <label for="num-meds">Medications</label>
+              <input type="number" id="num-meds" value="1" min="0" />
+            </div>
+          </div>
+          <div class="field">
+            <label for="num-labs">Lab Tests</label>
+            <input type="number" id="num-labs" value="9" min="0" />
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-divider"></div>
+
+      <div class="sidebar-section">
+        <div class="section-label">Attending Physician</div>
+        <div class="physician-card">
+          <div class="physician-avatar">RS</div>
+          <div>
+            <div class="physician-name">Dr. R. Sharma</div>
+            <div class="physician-dept">Dept. of Intensive Care</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-divider"></div>
+
+      <div class="sidebar-section">
+        <div class="section-label">Model Info</div>
+        <div class="model-meta">
+          <div class="meta-row"><span>Engine</span><span class="mono">BEAST v2.0</span></div>
+          <div class="meta-row"><span>Dataset</span><span class="mono">MIMIC-III</span></div>
+          <div class="meta-row"><span>Architecture</span><span class="mono">Multi-Task MLP</span></div>
+          <div class="meta-row"><span>AUC-ROC</span><span class="mono em">0.923</span></div>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="disclaimer">Investigational use only. Not FDA-cleared. Not a substitute for clinical judgement.</div>
+      </div>
+
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main-content">
+
+      <div class="page-header">
+        <div class="page-header-left">
+          <div class="breadcrumb" id="breadcrumb">
+            <span class="bc-item">Patient 8222157</span>
+            <span class="bc-sep">/</span>
+            <span class="bc-item">Admission 1001</span>
+            <span class="bc-sep">/</span>
+            <span class="bc-item active">Risk Assessment</span>
+          </div>
+          <h1 class="page-title">Risk Assessment</h1>
+          <p class="page-sub">Run the PULSE model to generate a comprehensive, AI-driven readmission risk score for your patient.</p>
+        </div>
+        <button class="run-btn" id="run-btn" onclick="runPrediction()">
+          <svg width="16" height="16" viewBox="0 0 15 15" fill="none"><path d="M3 2l10 5.5L3 13V2z" fill="currentColor"/></svg>
+          Run Analysis
+        </button>
+      </div>
+
+      <div class="tab-bar">
+        <button class="tab active" data-tab="inputs" onclick="showTab('inputs')">Model Inputs</button>
+        <button class="tab" data-tab="history" onclick="showTab('history')">History</button>
+      </div>
+
+      <!-- TAB: INPUTS -->
+      <div class="tab-content active" id="tab-inputs">
+
+        <div class="content-section">
+          <div class="section-header">
+            <span class="section-icon">
+              <svg width="14" height="14" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M6 4v2l1.5 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </span>
+            Clinical Context
+          </div>
+          <div class="grid-2">
+            <div class="input-card">
+              <label class="input-label" for="diagnosis">Primary Diagnosis</label>
+              <div class="select-wrap">
+                <select id="diagnosis" class="styled-select">
+                  <option value="Hypertension">Hypertension</option>
+                  <option value="Stroke">Stroke</option>
+                  <option value="Sepsis">Sepsis</option>
+                  <option value="Pneumonia">Pneumonia</option>
+                  <option value="Heart Failure">Heart Failure</option>
+                  <option value="Diabetes">Diabetes</option>
+                </select>
+                <span class="select-arrow">↓</span>
+              </div>
+            </div>
+            <div class="input-card">
+              <label class="input-label" for="medication">Primary Medication</label>
+              <div class="select-wrap">
+                <select id="medication" class="styled-select">
+                  <option value="None">None</option>
+                  <option value="Steroids">Steroids</option>
+                  <option value="Insulin">Insulin</option>
+                  <option value="Antibiotics">Antibiotics</option>
+                </select>
+                <span class="select-arrow">↓</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="content-section">
+          <div class="section-header">
+            <span class="section-icon">
+              <svg width="14" height="14" viewBox="0 0 12 12"><path d="M1 9h2l2-6 2 8 2-5 1.5 3H11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+            </span>
+            Biomarkers &amp; Vitals
+            <span class="section-badge" id="vitals-badge">All active</span>
+          </div>
+          <div class="vitals-grid" id="vitals-grid"></div>
+        </div>
+
+        <div class="run-footer">
+          <div class="run-footer-note">
+            <svg width="15" height="15" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.4"/><path d="M7 6v4M7 4.5v.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+            BEAST v2.0 gradient-boosted ensemble. Results are probabilistic.
+          </div>
+          <button class="run-btn run-btn-lg" onclick="runPrediction()">
+            <svg width="16" height="16" viewBox="0 0 15 15" fill="none"><path d="M3 2l10 5.5L3 13V2z" fill="currentColor"/></svg>
+            Run PULSE Analysis
+          </button>
+        </div>
+
+      </div>
+
+      <!-- TAB: RESULTS -->
+      <div class="tab-content" id="tab-results">
+        <div class="results-placeholder" id="results-placeholder">
+          <div class="placeholder-icon">
+            <svg width="52" height="52" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="22" stroke="currentColor" stroke-width="1.5" stroke-dasharray="5 5"/><path d="M10 24h7l4-9 6 18 4-13 3 4h4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="placeholder-title">No results yet</div>
+          <div class="placeholder-sub">Configure inputs and run the analysis to generate your risk report.</div>
+          <button class="run-btn" onclick="showTab('inputs')">Go to Inputs</button>
+        </div>
+
+        <div class="results-content hidden" id="results-content">
+
+          <div class="results-top">
+            <div class="result-card gauge-card">
+              <div class="card-label">Readmission Risk Score</div>
+              <div class="gauge-container">
+                <canvas id="gaugeCanvas" width="220" height="130"></canvas>
+                <div class="gauge-center-text">
+                  <div class="gauge-score" id="gauge-score">—</div>
+                  <div class="gauge-pct-label">readmission risk</div>
+                </div>
+              </div>
+              <div class="gauge-zones">
+                <span class="zone-tag stable">0–30% Stable</span>
+                <span class="zone-tag elevated">31–64% Elevated</span>
+                <span class="zone-tag critical">65%+ Critical</span>
+              </div>
+            </div>
+
+            <div class="result-card priority-card" id="priority-card">
+              <div class="card-label">Priority Status</div>
+              <div class="badge-wrap" id="badge-wrap"></div>
+              <div class="priority-desc" id="priority-desc"></div>
+              <div class="priority-meta" id="priority-meta"></div>
+            </div>
+
+            <div class="result-card snapshot-card">
+              <div class="card-label">Vital Snapshot</div>
+              <div class="snapshot-bars" id="snapshot-bars"></div>
+            </div>
+          </div>
+
+          <div class="content-section">
+            <div class="section-header">
+              <span class="section-icon">
+                <svg width="14" height="14" viewBox="0 0 12 12"><path d="M2 10V6l4-4 4 4v4H8V8H6v2H2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" fill="none"/></svg>
+              </span>
+              Clinical Reasoning — Feature Importance
+              <span class="section-badge warning" id="top-driver-badge"></span>
+            </div>
+            <div class="reasoning-grid" id="reasoning-grid"></div>
+          </div>
+
+          <details class="payload-details">
+            <summary>View API Payload &amp; Response</summary>
+            <div class="payload-inner">
+              <div class="payload-col">
+                <div class="payload-label">Sent Payload</div>
+                <pre class="payload-pre" id="payload-sent"></pre>
+              </div>
+              <div class="payload-col">
+                <div class="payload-label">Received Response</div>
+                <pre class="payload-pre" id="payload-received"></pre>
+              </div>
+            </div>
+          </details>
+
+        </div>
+      </div>
+
+      <!-- TAB: HISTORY -->
+      <div class="tab-content" id="tab-history">
+        <div class="content-section">
+          <div class="section-header">
+            <span class="section-icon">
+              <svg width="14" height="14" viewBox="0 0 12 12"><path d="M6 2v4l2.5 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+            </span>
+            Prediction History
+          </div>
+          <table class="history-table">
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Patient ID</th>
+                <th>Diagnosis</th>
+                <th>Risk Score</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="history-tbody">
+              <tr><td colspan="6" class="empty-row">No predictions recorded yet.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script src="app.js"></script>
+</body>
+</html>
