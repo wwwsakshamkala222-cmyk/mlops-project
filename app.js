@@ -196,14 +196,27 @@ async function callPredictAPI(payload) {
 
 /* ═══════ RUN PREDICTION ══════════════════════════════ */
 async function runPrediction() {
-  const vitals = getVitalsValues();
+  const vitalsArr = getVitalsValues(); // Still returns [gluc, crea, hemo...]
+  
+  // Map the array to the exact dictionary keys the API expects
+  const vitalsObj = {
+      "Blood_Glucose": vitalsArr[0],
+      "Creatinine": vitalsArr[1],
+      "Hemoglobin": vitalsArr[2],
+      "WBC": vitalsArr[3],
+      "Heart_Rate": vitalsArr[4],
+      "Blood_Pressure_Systolic": vitalsArr[5],
+      "SpO2": vitalsArr[6],
+      "Temperature": vitalsArr[7]
+  };
+
   const payload = {
     patient_id: document.getElementById('pid')?.value || '—',
     age:        document.getElementById('age')?.value || '—',
     gender:     document.getElementById('gender')?.value || '—',
     diagnosis:  document.getElementById('diagnosis')?.value || '—',
     medication: document.getElementById('medication')?.value || '—',
-    vitals,
+    vitals:     vitalsObj, // Send the object, not the array
   };
 
   setLoading(true);
@@ -217,11 +230,11 @@ async function runPrediction() {
     return; // Stops the code dead in its tracks!
   }
 
-  let fi = result.feature_importance || VITALS.map((v,i)=>({
-    name:v.name, unit:v.unit, value:vitals[i],
-    weight:0.5, inRange:vitals[i]>=v.lo&&vitals[i]<=v.hi, step:v.step
+   let fi = result.feature_importance || VITALS.map((v,i)=>({
+    name:v.name, unit:v.unit, value:vitalsArr[i], 
+    weight:0.5, inRange:vitalsArr[i]>=v.lo&&vitalsArr[i]<=v.hi, step:v.step
   }));
-
+  
   paintResults(result.risk_score, fi, payload);
   addHistory({ pid:payload.patient_id, diag:payload.diagnosis, score:result.risk_score });
   showTab('results'); // Switches the tab!
@@ -235,7 +248,7 @@ function paintPayload(p, score, fi) {
   if (s) s.textContent = JSON.stringify({
     patient_id:p.patient_id, age:p.age, gender:p.gender,
     diagnosis:p.diagnosis, medication:p.medication,
-    vitals:p.vitals.map(v=>Math.round(v*10)/10)
+    vitals: p.vitals
   },null,2);
   if (r) r.textContent = JSON.stringify({
     risk_score: score,
